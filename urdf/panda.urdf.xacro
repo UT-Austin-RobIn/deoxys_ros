@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
+
+  <xacro:include filename="$(find franka_description)/robots/common/franka_robot.xacro"/>
+  <xacro:arg name="arm_id" default="panda" />
+
+  <link name="world" />
+
+  <xacro:franka_robot arm_id="$(arg arm_id)"
+                      joint_limits="${xacro.load_yaml('$(find franka_description)/robots/panda/joint_limits.yaml')}"
+                      >
+  </xacro:franka_robot>
+
+  <link name="left_wall">
+    <!-- left -->
+    <visual>
+      <geometry>
+        <box size="1 0.025 1"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 .8 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="1 0.025 1"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <link name="rear_wall">
+    <visual>
+      <geometry>
+        <box size="0.025 1 1"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 .8 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.025 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="table">
+    <visual>
+      <geometry>
+        <box size="2 1 0.025 "/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 .8 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="2 1 0.025"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="world_to_link0" type="fixed">
+     <parent link="world"/>
+     <child  link="$(arg arm_id)_link0" />
+  </joint>
+  <joint name="world_to_left_wall" type="fixed">
+     <parent link="world"/>
+     <child  link="left_wall" />
+     <origin xyz="0.30 0.30 0.5"/>
+  </joint>
+    <joint name="world_to_rear_wall" type="fixed">
+     <parent link="world"/>
+     <child  link="rear_wall" />
+     <origin xyz="-0.20 0.0 0.5"/>
+  </joint>
+  <joint name="world_to_table" type="fixed">
+     <parent link="world"/>
+     <child  link="table" />
+     <origin xyz="0 0 -0.025"/>
+  </joint>
+</robot>
+
