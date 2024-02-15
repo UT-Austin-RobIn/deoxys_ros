@@ -112,7 +112,7 @@ class MoveitCommander(object):
 
     pose_goal = self.group.get_current_pose()
     # pose_goal.pose.position.x += 0.05
-    pose_goal.pose.position.z -= 0.3
+    pose_goal.pose.position.z += 0.3
     # pose_goal.pose.position.z -= 0.3
     # pose_goal.pose.position.y += 0.4
 
