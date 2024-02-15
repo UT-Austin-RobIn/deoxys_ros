@@ -13,7 +13,9 @@ Executing ```rostopic list``` should give you a sizeable number of topics
 Executing ```rostopic echo /joint_states``` should give nothing  
 
 ## Running the scripts
-With the rosrpl environment activated run scripts.deoxys_server.py, this will create an action server waiting for requests. The deoxys_client is an example of how to query the moveit_commander and send the trajectory execution request to the server.
+With the rosrpl environment activated run scripts/deoxys_server.py, this will create an action server waiting for requests. The deoxys_client is an example of how to query the moveit_commander and send the trajectory execution request to the server.  
+
+After running deoxys_server.py executing ```rostopic echo /joint_states``` should start displaying the real time joint states of the Franka Panda.  
 
 ## Todo
 [] Add environment.yaml for rosrpl  
