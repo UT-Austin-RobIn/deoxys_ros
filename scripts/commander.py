@@ -67,9 +67,9 @@ class MoveitCommander(object):
     group_names = robot.get_group_names()
     print("============ Robot Groups:", robot.get_group_names())
 
-    print("============ Printing robot state")
-    print(robot.get_current_state())
-    print("")
+    # print("============ Printing robot state")
+    # print(robot.get_current_state())
+    # print("")
     
     # Misc variables
     self.robot = robot
@@ -99,27 +99,8 @@ class MoveitCommander(object):
     current_joints = self.group.get_current_joint_values()
     return all_close(joint_goal, current_joints, 0.01)
 
-  def plan_to_pose_goal(self):
+  def plan_to_pose_goal(self, pose_goal):
     group = self.group
-
-    # TODO (): accept pose input 
-    # pose_goal = geometry_msgs.msg.Pose()
-    # pose_goal.orientation.w = 1.0
-    # pose_goal.position.x = 0.4
-    # pose_goal.position.y = 0.1
-    # pose_goal.position.z = 0.4
-    # group.set_pose_target(pose_goal)
-
-    pose_goal = self.group.get_current_pose()
-    # pose_goal.pose.position.x += 0.05
-    pose_goal.pose.position.z += 0.3
-    # pose_goal.pose.position.z -= 0.3
-    # pose_goal.pose.position.y += 0.4
-
-    # pose_goal = self.group.get_random_pose()
-    # print('WARN RANDOM POSE GOAL')
-    # breakpoint()
-
     group.set_pose_target(pose_goal)
     plan = group.plan()
     group.clear_pose_targets()

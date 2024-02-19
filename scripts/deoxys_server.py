@@ -16,9 +16,7 @@ from deoxys.franka_interface import FrankaInterface
 from deoxys.utils import YamlConfig
 from deoxys.utils.log_utils import get_deoxys_example_logger
 
-# from commander import MoveitCommander
 
-logger = get_deoxys_example_logger()
 
 import rospy
 from sensor_msgs.msg import JointState
@@ -27,6 +25,8 @@ import actionlib
 
 #import the action framework
 from moveit_msgs.msg import ExecuteTrajectoryAction
+
+logger = get_deoxys_example_logger()
 
 
 JOINTS = [
@@ -50,9 +50,6 @@ def parse_args():
     parser.add_argument(
         "--controller-cfg", type=str, default="joint-impedance-controller.yml"
     )
-    parser.add_argument(
-        "--folder", type=Path, default="data_collection_example/example_data"
-    )
 
     args = parser.parse_args()
     return args
@@ -61,7 +58,7 @@ def parse_args():
 
 class ExecuteTrajectoryServer:
     def __init__(self,args, robot_interface):
-        self.server = actionlib.SimpleActionServer('traj_exeww', ExecuteTrajectoryAction, self.execute, False)
+        self.server = actionlib.SimpleActionServer('deoxys_trajectory_executor', ExecuteTrajectoryAction, self.execute, False)
         self.server.start()
         self.robot_interface = robot_interface
         self.controller_cfg = YamlConfig(config_root + f"/{args.controller_cfg}").as_easydict()
@@ -69,17 +66,14 @@ class ExecuteTrajectoryServer:
 
 
     def execute(self,goal):
-        print("dir goal: ", dir(goal))
+        print("... Executing Trajectory ")
         joint_trajectory = goal.trajectory.joint_trajectory
         trajectory = []
         for joint_trajectory_point in joint_trajectory.points:
             trajectory.append(joint_trajectory_point.positions)
-
-        print("Trajectory:\n",trajectory)
-        print("num points: ", len(trajectory))
-        print("size of point: ", len(trajectory[0]))
         self.move_to(trajectory)
         self.server.set_succeeded()
+        print("Trajectory Successfully Executed")
 
     def move_to(self, trajectory):
         """
@@ -107,15 +101,14 @@ class ExecuteTrajectoryServer:
         logger.info(f"Trajectory Length: {len(jpos_steps)}")
         logger.info(f"Current joints: {np.round(current_q, 3)}")
         # try to follow path
-        controller_type = "JOINT_IMPEDANCE"
 
+        controller_type = "JOINT_IMPEDANCE"
         action_history = []
         state_history = []
         prev_action = list(current_q)
         for i, jpos_t in enumerate(jpos_steps):
             action = list(jpos_t) + [-1.0]
             logger.debug("step {}, action {}".format(i, np.round(action, 2)))
-            # print("step {}, action {}".format(i, np.round(action, 2)))
             robot_interface.control(
                 controller_type=controller_type,
                 action=action,

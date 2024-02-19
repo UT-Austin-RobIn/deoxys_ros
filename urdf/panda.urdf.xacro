@@ -10,9 +10,8 @@
                       joint_limits="${xacro.load_yaml('$(find franka_description)/robots/panda/joint_limits.yaml')}"
                       >
   </xacro:franka_robot>
-
-  <link name="left_wall">
-    <!-- left -->
+  
+<!--   <link name="left_wall">
     <visual>
       <geometry>
         <box size="1 0.025 1"/>
@@ -42,7 +41,7 @@
         <box size="0.025 1 1"/>
       </geometry>
     </collision>
-  </link>
+  </link> -->
 
   <link name="table">
     <visual>
@@ -64,7 +63,7 @@
      <parent link="world"/>
      <child  link="$(arg arm_id)_link0" />
   </joint>
-  <joint name="world_to_left_wall" type="fixed">
+ <!--  <joint name="world_to_left_wall" type="fixed">
      <parent link="world"/>
      <child  link="left_wall" />
      <origin xyz="0.30 0.30 0.5"/>
@@ -73,7 +72,7 @@
      <parent link="world"/>
      <child  link="rear_wall" />
      <origin xyz="-0.20 0.0 0.5"/>
-  </joint>
+  </joint> -->
   <joint name="world_to_table" type="fixed">
      <parent link="world"/>
      <child  link="table" />

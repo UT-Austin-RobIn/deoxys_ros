@@ -28,4 +28,6 @@ After running deoxys_server.py executing ```rostopic echo /joint_states``` shoul
 ## Todo
 [X] Add environment.yaml for rosrpl  
 [X] Add a guide for enabling uniform sampling on the motion planner  
-[] Have someone test setting it up from scratch 
+[X] Remove the walls from the planning scene  
+[ ] Have someone test setting it up from scratch  
+[ ] Cleanup commander.py and deoxys_server.py

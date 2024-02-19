@@ -73,12 +73,13 @@
       <arg name="pipeline" value="chomp" />
       <arg name="arm_id" value="$(arg arm_id)" />
     </include>
-
+    
     <!-- Pilz Industrial Motion -->
     <include file="$(find panda_moveit_config)/launch/planning_pipeline.launch.xml">
       <arg name="pipeline" value="pilz_industrial_motion_planner" />
       <arg name="arm_id" value="$(arg arm_id)" />
     </include>
+    
 
     <!-- Support custom planning pipeline -->
     <include if="$(eval arg('pipeline') not in ['ompl', 'chomp', 'pilz_industrial_motion_planner'])"
@@ -106,5 +107,8 @@
     <param name="planning_scene_monitor/publish_transforms_updates" value="$(arg publish_monitored_planning_scene)" />
     <param name="sample_duration" value="0.02"/>
   </node>
+
+  <!-- Start the rviz viewer with motion planning -->
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find deoxys_ros)/launch/deoxys_ros_rviz.rviz" />
 
 </launch>
