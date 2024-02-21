@@ -111,4 +111,6 @@
   <!-- Start the rviz viewer with motion planning -->
   <node type="rviz" name="rviz" pkg="rviz" args="-d $(find deoxys_ros)/launch/deoxys_ros_rviz.rviz" />
 
+  
+
 </launch>
