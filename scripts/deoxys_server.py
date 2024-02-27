@@ -59,13 +59,15 @@ def parse_args():
 class ExecuteTrajectoryServer:
     def __init__(self,args, robot_interface):
         self.server = actionlib.SimpleActionServer('deoxys_trajectory_executor', ExecuteTrajectoryAction, self.execute, False)
+        self.hitter = actionlib.SimpleActionServer('hitting_primitive', ExecuteTrajectoryAction, self.hitting_primitive, False)
         self.server.start()
+        self.hitter.start()
         self.robot_interface = robot_interface
         self.controller_cfg = YamlConfig(config_root + f"/{args.controller_cfg}").as_easydict()
         
 
 
-    def execute(self,goal):
+    def execute(self, goal):
         print("... Executing Trajectory ")
         joint_trajectory = goal.trajectory.joint_trajectory
         trajectory = []
@@ -74,6 +76,17 @@ class ExecuteTrajectoryServer:
         self.move_to(trajectory)
         self.server.set_succeeded()
         print("Trajectory Successfully Executed")
+
+    ##TO BE IMPLEMENTED
+    def hitting_primitive(self,goal):
+        print("... Executing Hit ")
+        joint_trajectory = goal.trajectory.joint_trajectory
+        trajectory = []
+        for joint_trajectory_point in joint_trajectory.points:
+            trajectory.append(joint_trajectory_point.positions)
+        self.move_to(trajectory)
+        self.hittter.set_succeeded()
+        print("Successfully executed hit")
 
     def move_to(self, trajectory):
         """
