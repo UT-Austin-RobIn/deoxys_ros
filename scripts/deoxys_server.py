@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Test script for joint impedance controller - just try to reach a nearby joint position by following
 an interpolated path.
@@ -51,7 +52,8 @@ def parse_args():
         "--controller-cfg", type=str, default="joint-impedance-controller.yml"
     )
 
-    args = parser.parse_args()
+    # args = parser.parse_args()
+    args,unknown = parser.parse_known_args()
     return args
 
 
@@ -59,9 +61,9 @@ def parse_args():
 class ExecuteTrajectoryServer:
     def __init__(self,args, robot_interface):
         self.server = actionlib.SimpleActionServer('deoxys_trajectory_executor', ExecuteTrajectoryAction, self.execute, False)
-        self.hitter = actionlib.SimpleActionServer('hitting_primitive', ExecuteTrajectoryAction, self.hitting_primitive, False)
+        # self.hitter = actionlib.SimpleActionServer('hitting_primitive', ExecuteTrajectoryAction, self.hitting_primitive, False)
         self.server.start()
-        self.hitter.start()
+        # self.hitter.start()
         self.robot_interface = robot_interface
         self.controller_cfg = YamlConfig(config_root + f"/{args.controller_cfg}").as_easydict()
         
@@ -77,16 +79,6 @@ class ExecuteTrajectoryServer:
         self.server.set_succeeded()
         print("Trajectory Successfully Executed")
 
-    ##TO BE IMPLEMENTED
-    def hitting_primitive(self,goal):
-        print("... Executing Hit ")
-        joint_trajectory = goal.trajectory.joint_trajectory
-        trajectory = []
-        for joint_trajectory_point in joint_trajectory.points:
-            trajectory.append(joint_trajectory_point.positions)
-        self.move_to(trajectory)
-        self.hittter.set_succeeded()
-        print("Successfully executed hit")
 
     def move_to(self, trajectory):
         """
@@ -146,6 +138,7 @@ def main():
     
 
     while not rospy.is_shutdown():
+        try:
             state_msg = JointState()
             state_msg.header.stamp = rospy.Time.now()
             position = [0.]*9
@@ -153,7 +146,13 @@ def main():
             state_msg.name = JOINTS
             state_msg.position = position
             pub.publish(state_msg)
-            rate.sleep()
+            
+
+        except Exception as e:
+            print(e)
+
+        rate.sleep()
+            
 
 
 
