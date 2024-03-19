@@ -112,6 +112,10 @@ class ExecuteTrajectoryServer:
         state_history = []
         prev_action = list(current_q)
         for i, jpos_t in enumerate(jpos_steps):
+
+            if(self.server.is_preempt_requested()):
+                print("trajectory cancelled")
+                break
             action = list(jpos_t) + [-1.0]
             logger.debug("step {}, action {}".format(i, np.round(action, 2)))
             robot_interface.control(
@@ -119,9 +123,9 @@ class ExecuteTrajectoryServer:
                 action=action,
                 controller_cfg=controller_cfg,
             )
-            state_history.append(np.array(robot_interface._state_buffer[-1].q))
-            action_history.append(prev_action)
-            prev_action = np.array(action)[:-1]
+            # state_history.append(np.array(robot_interface._state_buffer[-1].q))
+            # action_history.append(prev_action)
+            # prev_action = np.array(action)[:-1]
 
 
 

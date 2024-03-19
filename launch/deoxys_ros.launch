@@ -113,6 +113,6 @@
 
 
 
-  <node pkg="deoxys_ros" name="deoxys_server" type="deoxys_server.py" /> 
+  <!-- <node pkg="deoxys_ros" name="deoxys_server" type="deoxys_server.py" /> -->
 
 </launch>
