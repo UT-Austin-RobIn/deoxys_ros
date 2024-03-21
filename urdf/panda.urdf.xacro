@@ -63,20 +63,37 @@
      <parent link="world"/>
      <child  link="$(arg arm_id)_link0" />
   </joint>
- <!--  <joint name="world_to_left_wall" type="fixed">
-     <parent link="world"/>
-     <child  link="left_wall" />
-     <origin xyz="0.30 0.30 0.5"/>
+
+
+  <link name="stick">
+    <visual>
+      <geometry>
+        <box size="0.2 0.025 0.025"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 .8 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.18 0.025 0.025"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="panda_hand_to_stick" type="fixed">
+     <parent link="panda_hand"/>
+     <child  link="stick" />
+     <origin xyz="0.12 0 0.12"/>
   </joint>
-    <joint name="world_to_rear_wall" type="fixed">
-     <parent link="world"/>
-     <child  link="rear_wall" />
-     <origin xyz="-0.20 0.0 0.5"/>
-  </joint> -->
+
   <joint name="world_to_table" type="fixed">
      <parent link="world"/>
      <child  link="table" />
      <origin xyz="0 0 -0.025"/>
   </joint>
+
+  <disable_collisions link1="stick" link2="panda_leftfinger"/>
+  <disable_collisions link1="stick" link2="panda_rightfinger"/>
 </robot>
 

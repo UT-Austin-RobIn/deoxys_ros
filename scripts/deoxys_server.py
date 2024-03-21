@@ -26,6 +26,7 @@ import actionlib
 
 #import the action framework
 from moveit_msgs.msg import ExecuteTrajectoryAction
+import time
 
 logger = get_deoxys_example_logger()
 
@@ -42,7 +43,7 @@ JOINTS = [
   "panda_finger_joint2"
   ]
 
-NUM_INTERP_STEPS = 80
+# NUM_INTERP_STEPS = 80
 
 
 def parse_args():
@@ -61,9 +62,7 @@ def parse_args():
 class ExecuteTrajectoryServer:
     def __init__(self,args, robot_interface):
         self.server = actionlib.SimpleActionServer('deoxys_trajectory_executor', ExecuteTrajectoryAction, self.execute, False)
-        # self.hitter = actionlib.SimpleActionServer('hitting_primitive', ExecuteTrajectoryAction, self.hitting_primitive, False)
         self.server.start()
-        # self.hitter.start()
         self.robot_interface = robot_interface
         self.controller_cfg = YamlConfig(config_root + f"/{args.controller_cfg}").as_easydict()
         
@@ -108,24 +107,22 @@ class ExecuteTrajectoryServer:
         # try to follow path
 
         controller_type = "JOINT_IMPEDANCE"
-        action_history = []
-        state_history = []
-        prev_action = list(current_q)
         for i, jpos_t in enumerate(jpos_steps):
+            # print("target: ",np.round(jpos_t,4))
+            # print("curret: ",np.round(robot_interface.last_q,4), "\n")
 
+            # input("continue to next waypoint")
             if(self.server.is_preempt_requested()):
                 print("trajectory cancelled")
                 break
-            action = list(jpos_t) + [-1.0]
+            
+            action = list(jpos_t) + [-1.0] 
             logger.debug("step {}, action {}".format(i, np.round(action, 2)))
             robot_interface.control(
                 controller_type=controller_type,
                 action=action,
                 controller_cfg=controller_cfg,
             )
-            # state_history.append(np.array(robot_interface._state_buffer[-1].q))
-            # action_history.append(prev_action)
-            # prev_action = np.array(action)[:-1]
 
 
 
@@ -156,7 +153,32 @@ def main():
             print(e)
 
         rate.sleep()
+
+    # controller_type = "JOINT_POSITION" # "JOINT_IMPEDANCE"
+
+    # controller_cfg = YamlConfig(config_root + f"/{args.controller_cfg}").as_easydict()
+
+    # time.sleep(1)
             
+    # current_q = robot_interface.last_q
+    # while True:
+
+    #     # current_q = robot_interface.last_q
+    #     current_q = robot_interface._state_buffer[-1].q
+
+    #     input("continue to next waypoint")
+
+    #     # action = list(current_q) + [0] 
+    #     action = np.zeros(8)
+    #     action[:7] = current_q
+    #     action[:7] += 0
+
+    #     # logger.debug("step {}, action {}".format(i, np.round(action, 2)))
+    #     robot_interface.control(
+    #         controller_type=controller_type,
+    #         action=action,
+    #         controller_cfg=controller_cfg,
+    #     )
 
 
 
