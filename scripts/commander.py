@@ -106,6 +106,12 @@ class MoveitCommander(object):
     group.clear_pose_targets()
     return plan 
 
+  def plan_to_joint_goal(self, joint_goal):
+    group = self.group
+    group.set_joint_value_target(joint_goal)
+    plan = group.plan()
+    group.clear_pose_targets()
+    return plan 
 
   def plan_cartesian_path(self, scale=1):
 

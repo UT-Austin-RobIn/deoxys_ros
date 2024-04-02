@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-"""
-Test script for joint impedance controller - just try to reach a nearby joint position by following
-an interpolated path.
-"""
 import argparse
 import pickle
 import threading
@@ -16,7 +12,7 @@ from deoxys import config_root
 from deoxys.franka_interface import FrankaInterface
 from deoxys.utils import YamlConfig
 from deoxys.utils.log_utils import get_deoxys_example_logger
-
+from std_msgs.msg import String
 
 
 import rospy
@@ -27,6 +23,8 @@ import actionlib
 #import the action framework
 from moveit_msgs.msg import ExecuteTrajectoryAction
 import time
+from commander import MoveitCommander
+from geometry_msgs.msg import *
 
 logger = get_deoxys_example_logger()
 
@@ -65,6 +63,58 @@ class ExecuteTrajectoryServer:
         self.server.start()
         self.robot_interface = robot_interface
         self.controller_cfg = YamlConfig(config_root + f"/{args.controller_cfg}").as_easydict()
+        self.commander = MoveitCommander()
+        self.plan = []
+
+        # Joint State Goal Planner
+        self.s1 = rospy.Subscriber("deoxys_bridge/plan_joint_goal", JointState, self.plan_to_joint_state)
+
+        # Pose Goal Planner
+        self.s2 = rospy.Subscriber("deoxys_bridge/plan_pose_goal", PoseStamped, self.plan_to_pose)
+
+        # Execute Plan
+        self.s3 = rospy.Subscriber("deoxys_bridge/execute_plan", String, self.execute_plan)
+
+        # Joint State Goal Goto
+        self.s4 = rospy.Subscriber("deoxys_bridge/goto_joint_goal", JointState, self.goto_joint_state)
+
+        # Pose Goal Goto
+        self.s5 = rospy.Subscriber("deoxys_bridge/goto_pose_goal", PoseStamped, self.goto_pose)
+
+    def plan_to_pose(self,msg):
+        robot_trajectory = self.commander.plan_to_pose_goal(msg)
+        self.plan = robot_trajectory
+        print("planned to pose")
+
+    def plan_to_joint_state(self,msg):
+        print("planning to joint state")
+        robot_trajectory = self.commander.plan_to_joint_goal(msg)
+        self.plan = robot_trajectory
+        print("planned to joint state")
+
+    def execute_plan(self,msg):
+        print("... Executing Trajectory ")
+        joint_trajectory = self.plan[1].joint_trajectory
+        trajectory = []
+        for joint_trajectory_point in joint_trajectory.points:
+            trajectory.append(joint_trajectory_point.positions)
+        self.move_to(trajectory)
+        self.server.set_succeeded()
+        print("Trajectory Successfully Executed")
+
+    def goto_pose(self,msg):
+        robot_trajectory = self.commander.plan_to_pose_goal(msg)
+        self.plan = robot_trajectory
+        self.execute_plan(self.plan)
+
+    def goto_joint_state(self,msg):
+        print("planning to joint state")
+        robot_trajectory = self.commander.plan_to_joint_goal(msg)
+        self.plan = robot_trajectory
+        self.execute_plan(self.plan)
+
+
+
         
 
 
@@ -137,6 +187,7 @@ def main():
     server = ExecuteTrajectoryServer(args, robot_interface)
 
     
+    
 
     while not rospy.is_shutdown():
         try:
@@ -154,33 +205,7 @@ def main():
 
         rate.sleep()
 
-    # controller_type = "JOINT_POSITION" # "JOINT_IMPEDANCE"
-
-    # controller_cfg = YamlConfig(config_root + f"/{args.controller_cfg}").as_easydict()
-
-    # time.sleep(1)
-            
-    # current_q = robot_interface.last_q
-    # while True:
-
-    #     # current_q = robot_interface.last_q
-    #     current_q = robot_interface._state_buffer[-1].q
-
-    #     input("continue to next waypoint")
-
-    #     # action = list(current_q) + [0] 
-    #     action = np.zeros(8)
-    #     action[:7] = current_q
-    #     action[:7] += 0
-
-    #     # logger.debug("step {}, action {}".format(i, np.round(action, 2)))
-    #     robot_interface.control(
-    #         controller_type=controller_type,
-    #         action=action,
-    #         controller_cfg=controller_cfg,
-    #     )
-
-
+    
 
 if __name__ == "__main__":
     main()
