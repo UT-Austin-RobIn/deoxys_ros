@@ -22,7 +22,7 @@ Executing ```rostopic list``` should give you a sizeable number of topics
 Executing ```rostopic echo /joint_states``` should give nothing  
 
 ## Planning in your own scripts
-With the rosrpl environment activated and dexos_ros.launch launded there should be an action server for you to interface with.   
+With the rosrpl environment activated and dexos_ros.launch launched there should be an action server for you to interface with.   
 The interactive_client.py file demonstrates an example of how to use the provided commander.py file as a python interface.
 
 ## Todo
