@@ -15,16 +15,15 @@ ExecuteTrajectoryAction server/client for executing MoveIt trajectories with deo
 1. The Franka Panda must be on and connected (blue/green light)  
 2. The NUC should be running Deoxys  
 3. FCI should be enabled
-4. ```roslaunch launch/custom_move_group.launch```  
+4. ```roslaunch launch/deoxys_ros.launch```  
 
 ## Confirm Setup
 Executing ```rostopic list``` should give you a sizeable number of topics  
 Executing ```rostopic echo /joint_states``` should give nothing  
 
-## Running the scripts
-With the rosrpl environment activated run scripts/deoxys_server.py, this will create an action server waiting for requests. The deoxys_client is an example of how to query the moveit_commander and send the trajectory execution request to the server.  
-
-After running deoxys_server.py executing ```rostopic echo /joint_states``` should start displaying the real time joint states of the Franka Panda.  
+## Planning in your own scripts
+With the rosrpl environment activated and dexos_ros.launch launded there should be an action server for you to interface with.   
+The interactive_client.py file demonstrates an example of how to use the provided commander.py file as a python interface.
 
 ## Todo
 [X] Add environment.yaml for rosrpl  
