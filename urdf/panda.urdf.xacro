@@ -81,6 +81,22 @@
     </collision>
   </link>
 
+  <link name="camera">
+    <visual>
+      <geometry>
+        <box size="0.5 0.2 1"/>
+      </geometry>
+      <material name="blue_2">
+        <color rgba="0 0 .8 0.1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 0.2 1"/>
+      </geometry>
+    </collision>
+  </link>
+
   <joint name="panda_hand_to_stick" type="fixed">
      <parent link="panda_hand"/>
      <child  link="stick" />
@@ -91,6 +107,12 @@
      <parent link="world"/>
      <child  link="table" />
      <origin xyz="0 0 -0.025"/>
+  </joint>
+
+  <joint name="world_to_camera" type="fixed">
+     <parent link="world"/>
+     <child  link="camera" />
+     <origin xyz="0.45 -0.4 0"/>
   </joint>
 
   <disable_collisions link1="stick" link2="panda_leftfinger"/>

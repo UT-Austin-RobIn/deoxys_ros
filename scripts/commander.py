@@ -80,24 +80,6 @@ class MoveitCommander(object):
     self.eef_link = eef_link
     self.group_names = group_names
 
-  def go_to_joint_state(self):
-
-    # TODO
-
-    group = self.group
-    joint_goal = group.get_current_joint_values()
-    joint_goal[0] = 0
-    joint_goal[1] = -pi/4
-    joint_goal[2] = 0
-    joint_goal[3] = -pi/2
-    joint_goal[4] = 0
-    joint_goal[5] = pi/3
-    joint_goal[6] = 0
-
-    group.go(joint_goal, wait=True)
-    group.stop()
-    current_joints = self.group.get_current_joint_values()
-    return all_close(joint_goal, current_joints, 0.01)
 
   def plan_to_pose_goal(self, pose_goal):
     group = self.group
