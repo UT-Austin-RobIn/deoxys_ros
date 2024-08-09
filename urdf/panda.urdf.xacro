@@ -1,17 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
 
-  <xacro:include filename="$(find franka_description)/robots/common/franka_robot.xacro"/>
+  <xacro:include filename="$(find franka_description)/robots/common/franka_robot.xacro" />
   <xacro:arg name="arm_id" default="panda" />
 
   <link name="world" />
 
   <xacro:franka_robot arm_id="$(arg arm_id)"
-                      joint_limits="${xacro.load_yaml('$(find franka_description)/robots/panda/joint_limits.yaml')}"
-                      >
+    joint_limits="${xacro.load_yaml('$(find franka_description)/robots/panda/joint_limits.yaml')}"
+  >
   </xacro:franka_robot>
-  
-<!--   <link name="left_wall">
+
+  <!--   <link name="left_wall">
     <visual>
       <geometry>
         <box size="1 0.025 1"/>
@@ -42,80 +42,245 @@
       </geometry>
     </collision>
   </link> -->
-
+<!-- 
   <link name="table">
     <visual>
       <geometry>
-        <box size="2 1 0.025 "/>
+        <box size="2 1 0.025 " />
       </geometry>
       <material name="blue">
-        <color rgba="0 0 .8 1"/>
+        <color rgba="0 0 .8 1" />
       </material>
     </visual>
     <collision>
       <geometry>
-        <box size="2 1 0.025"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <joint name="world_to_link0" type="fixed">
-     <parent link="world"/>
-     <child  link="$(arg arm_id)_link0" />
-  </joint>
-
-
-  <!-- <link name="stick">
-    <visual>
-      <geometry>
-        <box size="0.2 0.025 0.025"/>
-      </geometry>
-      <material name="blue">
-        <color rgba="0 0 .8 1"/>
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <box size="0.18 0.025 0.025"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="camera">
-    <visual>
-      <geometry>
-        <box size="0.5 0.2 1"/>
-      </geometry>
-      <material name="blue_2">
-        <color rgba="0 0 .8 0.1"/>
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <box size="0.5 0.2 1"/>
+        <box size="2 1 0.025" />
       </geometry>
     </collision>
   </link> -->
 
-<!--   <joint name="panda_hand_to_stick" type="fixed">
-     <parent link="panda_hand"/>
-     <child  link="stick" />
-     <origin xyz="0.12 0 0.12"/>
-  </joint> -->
-
-  <joint name="world_to_table" type="fixed">
-     <parent link="world"/>
-     <child  link="table" />
-     <origin xyz="0 0 -0.025"/>
+  <joint name="world_to_link0" type="fixed">
+    <parent link="world" />
+    <child link="$(arg arm_id)_link0" />
   </joint>
 
-<!--   <joint name="world_to_camera" type="fixed">
-     <parent link="world"/>
-     <child  link="camera" />
-     <origin xyz="0.45 -0.4 0"/>
+
+  <link name="stick">
+    <visual>
+      <geometry>
+        <box size="0.175 0.025 0.025" />
+      </geometry>
+      <material name="blue_3">
+        <color rgba="0 0 .8 0.5" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.175 0.025 0.025" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- <link name="obstacle1">
+    <visual>
+      <geometry>
+        <box size="0.5 0.2 1.5" />
+      </geometry>
+      <material name="blue_2">
+        <color rgba="0 0 .8 0.1" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 0.2 1.5" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="obstacle2">
+    <visual>
+      <geometry>
+        <box size="0.2 0.5 1.5" />
+      </geometry>
+      <material name="blue_2">
+        <color rgba="0 0 .8 0.1" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.2 0.5 1.5" />
+      </geometry>
+    </collision>
+  </link> -->
+
+  <joint name="panda_hand_to_stick" type="fixed">
+    <parent link="panda_hand" />
+    <child link="stick" />
+    <origin xyz="0.11 0.03 0.12" rpy="0 0 0.4" />
+  </joint>
+
+  <!-- <joint name="world_to_table" type="fixed">
+    <parent link="world" />
+    <child link="table" />
+    <origin xyz="0 0 -0.005" />
   </joint> -->
 
-  <disable_collisions link1="stick" link2="panda_leftfinger"/>
-  <disable_collisions link1="stick" link2="panda_rightfinger"/>
-</robot>
+  <!-- <joint name="world_to_obstacle1" type="fixed">
+    <parent link="world" />
+    <child link="obstacle1" />
+    <origin xyz="0.45 -0.45 0" />
+  </joint>
 
+  <joint name="world_to_obstacle2" type="fixed">
+    <parent link="world" />
+    <child link="obstacle2" />
+    <origin xyz="0.83 0 0" />
+  </joint> -->
+
+  <disable_collisions link1="stick" link2="panda_leftfinger" />
+  <disable_collisions link1="stick" link2="panda_rightfinger" />
+
+  <link name="panda_grasptarget">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="0.0" />
+      <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <sphere radius="0.01" />
+      </geometry>
+      <material name="site">
+        <color rgba="1.0 0. 0. 1.0" />
+      </material>
+    </visual>
+  </link>
+  <joint name="panda_grasptarget_hand" type="fixed">
+    <parent link="panda_hand" />
+    <child link="panda_grasptarget" />
+    <origin rpy="0 0 0" xyz="0 0 0.105" />
+  </joint>
+
+
+  <link name="arm_mount">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 -0.01 0.02" />
+      <mass value="0.1" />
+      <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1" />
+    </inertial>
+    <visual>
+      <origin rpy="0 3.1415926 -1.57" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="file://$(find deoxys_ros)/urdf/meshes/arm_mount.stl" />
+      </geometry>
+      <!-- <material name="panda_white"/> -->
+      <material name="debug_color">
+        <color rgba="0 1.0 1.0 1.0" />
+      </material>
+    </visual>
+  </link>
+  <joint name="panda_hand_arm_mount" type="fixed">
+    <parent link="panda_grasptarget" />
+    <child link="arm_mount" />
+    <!-- <origin rpy="0 3.14159 -1.57" xyz="0.025 0 -0.068"/> -->
+    <origin rpy="0 0 0" xyz="0.025 0 -0.068" />
+  </joint>
+
+  <link name="marker_mount">
+    <visual>
+      <origin rpy="-1.57 3.1415926 -1.57" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="file://$(find deoxys_ros)/urdf/meshes/marker_mount.stl" />
+      </geometry>
+      <!-- <material name="panda_white"/> -->
+      <material name="debug_marker_color">
+        <color rgba="1.0 0.0 1.0 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.01 0.07 0.07" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="panda_hand_marker_mount" type="fixed">
+    <parent link="arm_mount" />
+    <child link="marker_mount" />
+    <origin rpy="0 0 0" xyz="0.01825 0 0.016" />
+  </joint>
+
+  <link name="finger_attachment">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <box size="0.027 0.105 0.01" />
+      </geometry>
+      <material name="blue_3">
+        <color rgba="0 0 .8 0.5" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.027 0.105 0.01" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="panda_leftfinger_finger_attachment" type="fixed">
+    <parent link="panda_grasptarget" />
+    <child link="finger_attachment" />
+    <origin rpy="0 0 0" xyz="0 0 0.025" />
+  </joint>
+
+  <xacro:macro name="camera" params="camera_name x y z">
+    <link name="${camera_name}_collider">
+      <visual>
+        <geometry>
+          <box size="0.15 0.15 0.15"/>
+        </geometry>
+        <material name="red">
+          <color rgba="0.8 0.0 0.0 0.5"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.15 0.15 0.15"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Tall thin box -->
+    <link name="${camera_name}_stand">
+      <visual>
+        <geometry>
+          <box size="0.1 0.1 1.0"/>
+        </geometry>
+        <material name="red">
+          <color rgba="0.8 0.0 0.0 0.5"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.1 0.1 1.0"/>
+        </geometry>
+      </collision>
+    </link>
+  
+    <joint name="${camera_name}_joint" type="fixed">
+      <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+      <parent link="world"/>
+      <child link="${camera_name}_collider"/>
+    </joint>
+
+    <joint name="${camera_name}_stand_joint" type="fixed">
+      <origin xyz="0 0 -0.5" rpy="0 0 0"/>
+      <parent link="${camera_name}_collider"/>
+      <child link="${camera_name}_stand"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- 1.0794; -0.0079469; 0.49701 -->
+  <xacro:camera camera_name="camera0" x="1.0794" y="-0.0079469" z="0.49701" />
+  <!-- 0.57881; -0.45396; 0.51466 -->
+  <xacro:camera camera_name="camera1" x="0.57881" y="-0.45396" z="0.51466" />
+</robot>
