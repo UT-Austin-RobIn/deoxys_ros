@@ -82,6 +82,7 @@ class MoveitCommander(object):
 
 
   def plan_to_pose_goal(self, pose_goal):
+    print ("Planning to pose goal")
     group = self.group
     group.set_pose_target(pose_goal)
     plan = group.plan()
