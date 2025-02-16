@@ -67,7 +67,7 @@ def osc_move(robot_interface, controller_type, controller_cfg, target_pose, num_
         quat_diff = transform_utils.quat_distance(target_quat, current_quat)
         current_axis_angle = transform_utils.quat2axisangle(current_quat)
         axis_angle_diff = transform_utils.quat2axisangle(quat_diff)
-        action_pos = (target_pos - current_pos).flatten() 
+        action_pos = (target_pos - current_pos).flatten() * 100
         action_axis_angle = axis_angle_diff.flatten() * 1
         action_pos = np.clip(action_pos, -1.0, 1.0)
         action_axis_angle = np.clip(action_axis_angle, -0.5, 0.5)
@@ -86,10 +86,10 @@ def osc_move(robot_interface, controller_type, controller_cfg, target_pose, num_
         # pos_error_norm = "{:.5f}".format(pos_error_norm)
         # ori_error_norm = "{:.5f}".format(ori_error_norm)
         # print(f"Error norm: {pos_error_norm}, {ori_error_norm}") 
-    logger.info(f'pos errors:{(target_pos - current_pos).flatten()}')
+    # logger.info(f'pos errors:{(target_pos - current_pos).flatten()}')
     logger.info(f'pos error norm:{np.linalg.norm((target_pos - current_pos).flatten())}')
-    logger.info(f'ori errors:{action_axis_angle}')
-    logger.info(f'ori error norm:{np.linalg.norm((action_axis_angle).flatten())}')
+    # logger.info(f'ori errors:{action_axis_angle}')
+    # logger.info(f'ori error norm:{np.linalg.norm((action_axis_angle).flatten())}')
     return action
 
 def move_to_target_pose(
@@ -328,24 +328,7 @@ class ExecuteTrajectoryServer:
                 controller_type=controller_type,
                 action=action,
                 controller_cfg=controller_cfg,
-            )
-            
-        NUM_EXTRA_STEPS = 20
-        for i in range(NUM_EXTRA_STEPS):
-
-            # input("continue to next waypoint")
-            if(self.server.is_preempt_requested()):
-                print("trajectory cancelled")
-                break
-            
-            action = list(jpos_t) + [self.target_grip]
-            robot_interface.control(
-                controller_type=controller_type,
-                action=action,
-                controller_cfg=controller_cfg,
-            )
-                # rate.sleep()
-            
+            )      
     # def osc_move_to(self, msg: PoseStamped):
     #     print("oscmoveto called")
     #     controller_type = "OSC_POSE"
@@ -386,7 +369,7 @@ class ExecuteTrajectoryServer:
         controller_type = "OSC_POSE"
         robot_interface = self.robot_interface
         controller_cfg = get_default_controller_config(controller_type)
-        controller_cfg['action_scale']['translation'] = 1.0
+        controller_cfg['action_scale']['translation'] = 0.01
         # breakpoint()
         
         dx = msg.pose.position.x
@@ -399,16 +382,17 @@ class ExecuteTrajectoryServer:
         
         axis_angle_delta = transform_utils.quat2axisangle(np.array([dqx, dqy, dqz, dqw]))
         
-        drx = axis_angle_delta[0]
-        dry = axis_angle_delta[1]
-        drz = axis_angle_delta[2]
+        # drx = axis_angle_delta[0]
+        # dry = axis_angle_delta[1]
+        # drz = axis_angle_delta[2]
         
         move_to_target_pose(
             robot_interface,
             controller_type,
             controller_cfg,
-            target_delta_pose=[dx, dy, dz, drx, dry, drz],
-            num_steps=40,
+            # target_delta_pose=[dx, dy, dz, drx, dry, drz],
+            target_delta_pose=[dx, dy, dz, 0, 0, 0],
+            num_steps=80,
             num_additional_steps=40,
             interpolation_method="linear",
         )
