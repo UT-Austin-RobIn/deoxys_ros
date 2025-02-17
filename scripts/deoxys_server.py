@@ -177,6 +177,7 @@ class ExecuteTrajectoryServer:
         self.target_grip = 0.0
         self.compliant = False
         self.plan = []
+        self.prev_control_mode = "JOINT_IMPEDANCE"
 
         # Joint State Goal Planner
         self.s1 = rospy.Subscriber("deoxys_bridge/plan_joint_goal", JointState, self.plan_to_joint_state)
@@ -297,7 +298,7 @@ class ExecuteTrajectoryServer:
                 else:
                     break
 
-
+        controller_type = "JOINT_IMPEDANCE"
         current_q = robot_interface.last_q
         logger.info(f"Initial: {current_q}")
         jpos_steps = trajectory
@@ -307,9 +308,22 @@ class ExecuteTrajectoryServer:
         
         print(f"Trajectory Length: {len(jpos_steps)}")
         print(f"Current joints: {np.round(current_q, 3)}")
+        
+        # when switching controller, command current pose briefly
+        if self.prev_control_mode == "OSC_POSE":
+            for i in range(20):
+                action = list(current_q) + [self.target_grip]
+                robot_interface.control(
+                    controller_type=controller_type,
+                    action=action,
+                    controller_cfg=controller_cfg,
+                )
+                print('switching mode')
+                time.sleep(0.05)     
+            
+                
+        
         # try to follow path
-
-        controller_type = "JOINT_IMPEDANCE"
         # rate = rospy.Rate(20)
         for i, jpos_t in enumerate(jpos_steps):
             # print("target: ",np.round(jpos_t,4))
@@ -328,7 +342,22 @@ class ExecuteTrajectoryServer:
                 controller_type=controller_type,
                 action=action,
                 controller_cfg=controller_cfg,
-            )      
+            )
+            
+        jpos_t = jpos_steps[-1]      
+        for i in range(10):
+            
+            if(self.server.is_preempt_requested()):
+                print("trajectory cancelled")
+                break
+            
+            action = list(jpos_t) + [self.target_grip]
+            robot_interface.control(
+                controller_type=controller_type,
+                action=action,
+                controller_cfg=controller_cfg,
+            )     
+        self.prev_control_mode = "JOINT_IMPEDANCE"
     # def osc_move_to(self, msg: PoseStamped):
     #     print("oscmoveto called")
     #     controller_type = "OSC_POSE"
@@ -370,6 +399,7 @@ class ExecuteTrajectoryServer:
         robot_interface = self.robot_interface
         controller_cfg = get_default_controller_config(controller_type)
         controller_cfg['action_scale']['translation'] = 0.01
+        controller_cfg['Kp']['translation'] = [200.]*3
         # breakpoint()
         
         dx = msg.pose.position.x
@@ -396,6 +426,8 @@ class ExecuteTrajectoryServer:
             num_additional_steps=40,
             interpolation_method="linear",
         )
+        
+        self.prev_control_mode = "OSC_POSE"
         self.osc_done_pub.publish(True)
 
     def test_local_cartesian(self):
