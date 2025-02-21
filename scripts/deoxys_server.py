@@ -344,19 +344,19 @@ class ExecuteTrajectoryServer:
                 controller_cfg=controller_cfg,
             )
             
-        jpos_t = jpos_steps[-1]      
-        for i in range(10):
+        # jpos_t = jpos_steps[-1]      
+        # for i in range(10):
             
-            if(self.server.is_preempt_requested()):
-                print("trajectory cancelled")
-                break
+        #     if(self.server.is_preempt_requested()):
+        #         print("trajectory cancelled")
+        #         break
             
-            action = list(jpos_t) + [self.target_grip]
-            robot_interface.control(
-                controller_type=controller_type,
-                action=action,
-                controller_cfg=controller_cfg,
-            )     
+        #     action = list(jpos_t) + [self.target_grip]
+        #     robot_interface.control(
+        #         controller_type=controller_type,
+        #         action=action,
+        #         controller_cfg=controller_cfg,
+        #     )     
         self.prev_control_mode = "JOINT_IMPEDANCE"
     # def osc_move_to(self, msg: PoseStamped):
     #     print("oscmoveto called")

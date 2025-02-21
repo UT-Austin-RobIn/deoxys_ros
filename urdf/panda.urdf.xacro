@@ -68,7 +68,7 @@
   <link name="stick">
     <visual>
       <geometry>
-        <box size="0.13 0.025 0.025" />
+        <box size="0.15 0.025 0.025" />
       </geometry>
       <material name="blue_3">
         <color rgba="0 0 .8 0.5" />
